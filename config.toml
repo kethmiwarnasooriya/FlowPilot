@@ -1,0 +1,25 @@
+# FlowPilot configuration
+# Change values here — no code changes needed.
+
+[scheduling]
+# Gap between two scheduled calls, in minutes.
+call_interval_minutes = 15
+# Calls are only scheduled inside working hours (24h format, local time).
+working_hours_start = "09:00"
+working_hours_end = "17:00"
+# 0 = Monday ... 6 = Sunday
+working_days = [0, 1, 2, 3, 4]
+# Default length of a call event in the calendar, in minutes.
+call_duration_minutes = 15
+timezone = "Asia/Colombo"
+
+[paths]
+# File the scheduler writes and the calendar-sync process reads.
+schedule_file = "data/schedule.txt"
+# Where contact status is stored.
+contacts_store = "data/contacts.json"
+
+[google]
+calendar_id = "primary"
+credentials_file = "credentials.json"
+token_file = "token.json"
