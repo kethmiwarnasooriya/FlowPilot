@@ -25,7 +25,7 @@ schedule_file = "data/schedule.txt"
 # Which schedule entries are already in Google Calendar (entry id -> event id).
 sync_state_file = "data/sync_state.json"
 # Where contact status is stored.
-contacts_store = "data/contacts.json"
+contacts_store = "data/contacts.db"
 
 [google]
 calendar_id = "primary"

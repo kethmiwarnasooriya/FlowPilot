@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from flowpilot.config import load_config
+from flowpilot.contact_store import ContactStore
 
 
 @pytest.fixture
@@ -20,6 +21,13 @@ def cfg(tmp_path):
         if isinstance(getattr(real, f.name), Path)
     }
     return dataclasses.replace(real, **redirected)
+
+
+@pytest.fixture
+def store(cfg):
+    s = ContactStore(cfg.contacts_store)
+    yield s
+    s.close()
 
 
 @pytest.fixture

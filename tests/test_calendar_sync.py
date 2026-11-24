@@ -4,6 +4,7 @@ from pathlib import Path
 
 from flowpilot.calendar_client import FakeCalendarClient
 from flowpilot.calendar_sync import event_id_for, load_state, sync_once
+from flowpilot.contact_store import ContactStore
 from flowpilot.ingest import ingest_document
 from flowpilot.message_queue import SQLiteQueue
 from flowpilot.schedule_file import read_entries
@@ -13,10 +14,11 @@ SAMPLES = Path(__file__).resolve().parent.parent / "samples"
 
 
 def schedule_samples(cfg, at, doc="contacts.pdf"):
-    q = SQLiteQueue(cfg.queue_db)
-    ingest_document(SAMPLES / doc, q)
-    run_scheduler(q, cfg, now=at(2026, 11, 24, 10, 7))
+    q, store = SQLiteQueue(cfg.queue_db), ContactStore(cfg.contacts_store)
+    ingest_document(SAMPLES / doc, q, store)
+    run_scheduler(q, store, cfg, now=at(2026, 11, 24, 10, 7))
     q.close()
+    store.close()
 
 
 def test_creates_one_event_per_entry(cfg, at):

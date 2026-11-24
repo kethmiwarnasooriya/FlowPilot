@@ -4,7 +4,6 @@ import pytest
 
 from flowpilot.ingest import NEW_CONTACT, ingest_document
 from flowpilot.message_queue import InMemoryQueue, SQLiteQueue
-from flowpilot.models import Contact
 
 SAMPLES = Path(__file__).resolve().parent.parent / "samples"
 
@@ -82,16 +81,17 @@ def test_two_consumers_never_get_the_same_message(tmp_path):
 
 # ---------- ingest: document -> queue ----------
 
-def test_ingest_puts_contacts_in_queue(queue):
-    result = ingest_document(SAMPLES / "contacts.pdf", queue)
-    assert queue.pending_count() == len(result.contacts) == 3
+def test_ingest_puts_contacts_in_queue(queue, store):
+    result = ingest_document(SAMPLES / "contacts.pdf", queue, store)
+    assert queue.pending_count() == len(result.queued) == 3
     msg = queue.get()
     assert msg.body["type"] == NEW_CONTACT
     assert msg.body["source"] == "contacts.pdf"
-    assert Contact.from_dict(msg.body["contact"]).name == "Ruwan Bandara"
+    # The message only carries the id; the contact itself lives in the store.
+    assert store.get(msg.body["contact_id"]).name == "Ruwan Bandara"
 
 
-def test_ingest_non_contact_document_queues_nothing(queue):
-    result = ingest_document(SAMPLES / "meeting_notes.docx", queue)
+def test_ingest_non_contact_document_queues_nothing(queue, store):
+    result = ingest_document(SAMPLES / "meeting_notes.docx", queue, store)
     assert not result.is_contact_document
     assert queue.pending_count() == 0
