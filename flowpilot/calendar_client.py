@@ -21,6 +21,7 @@ class CalendarEvent:
     start: datetime
     end: datetime
     reminder_minutes: int = 5
+    location: str = ""
 
 
 class EventAlreadyExists(Exception):
@@ -54,8 +55,10 @@ class GoogleCalendarClient:
                 "overrides": [{"method": "popup", "minutes": event.reminder_minutes}],
             },
         }
+        if event.location:
+            body["location"] = event.location
         try:
-            created = self._service.events().insert(calendarId=self._calendar_id, body=body).execute()
+            created =self._service.events().insert(calendarId=self._calendar_id, body=body).execute()
         except HttpError as exc:
             if exc.resp.status == 409:
                 raise EventAlreadyExists(event.event_id) from exc

@@ -11,8 +11,7 @@ from flowpilot.extractor import extract_contacts
 from flowpilot.message_queue import MessageQueue
 from flowpilot.models import Contact
 from flowpilot.reader import read_document
-
-NEW_CONTACT = "new_contact"
+from flowpilot.scheduler import NEW_CONTACT
 
 
 @dataclass

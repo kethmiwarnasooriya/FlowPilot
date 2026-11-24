@@ -11,11 +11,17 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 
+# Entry types
+CALL = "call"            # first call to a new contact
+CALLBACK = "callback"    # follow-up call the contact asked for
+MEETING = "meeting"      # physical meeting with an interested contact
+CALL_TYPES = {CALL, CALLBACK}  # these occupy call slots
+
 
 @dataclass(frozen=True)
 class ScheduleEntry:
     entry_id: str          # unique; equals the queue message_uid that produced it
-    type: str              # "call" (later also "meeting")
+    type: str              # CALL, CALLBACK or MEETING
     contact_id: str
     name: str
     company: str
@@ -24,6 +30,8 @@ class ScheduleEntry:
     start: datetime
     duration_minutes: int
     created_at: datetime
+    location: str = ""     # meetings only
+    note: str = ""         # e.g. why a callback was requested
 
     def to_json(self) -> str:
         data = asdict(self)
@@ -64,6 +72,5 @@ def read_entries(path: Path) -> list[ScheduleEntry]:
     return entries
 
 
-def last_call_slot(entries: list[ScheduleEntry]) -> datetime | None:
-    calls = [e.start for e in entries if e.type == "call"]
-    return max(calls) if calls else None
+def taken_call_slots(entries: list[ScheduleEntry]) -> list[datetime]:
+    return [e.start for e in entries if e.type in CALL_TYPES]

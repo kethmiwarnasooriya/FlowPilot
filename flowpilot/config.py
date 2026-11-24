@@ -16,6 +16,7 @@ DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config.toml"
 class Config:
     call_interval_minutes: int
     call_duration_minutes: int
+    meeting_duration_minutes: int
     working_hours_start: time
     working_hours_end: time
     working_days: tuple[int, ...]
@@ -50,6 +51,7 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> Config:
     cfg = Config(
         call_interval_minutes=int(sched["call_interval_minutes"]),
         call_duration_minutes=int(sched["call_duration_minutes"]),
+        meeting_duration_minutes=int(sched["meeting_duration_minutes"]),
         working_hours_start=_parse_hhmm(sched["working_hours_start"], "working_hours_start"),
         working_hours_end=_parse_hhmm(sched["working_hours_end"], "working_hours_end"),
         working_days=tuple(sched["working_days"]),
@@ -74,8 +76,8 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> Config:
 def _validate(cfg: Config) -> None:
     if cfg.call_interval_minutes <= 0:
         raise ValueError("call_interval_minutes must be positive")
-    if cfg.call_duration_minutes <= 0:
-        raise ValueError("call_duration_minutes must be positive")
+    if cfg.call_duration_minutes <= 0 or cfg.meeting_duration_minutes <= 0:
+        raise ValueError("call and meeting durations must be positive")
     if cfg.working_hours_start >= cfg.working_hours_end:
         raise ValueError("working_hours_start must be before working_hours_end")
     if not cfg.working_days or any(d not in range(7) for d in cfg.working_days):

@@ -17,7 +17,7 @@ from pathlib import Path
 
 from flowpilot.calendar_client import CalendarClient, CalendarEvent, EventAlreadyExists
 from flowpilot.config import Config, load_config
-from flowpilot.schedule_file import ScheduleEntry, read_entries
+from flowpilot.schedule_file import CALL, CALLBACK, MEETING, ScheduleEntry, read_entries
 
 
 @dataclass
@@ -53,23 +53,33 @@ def event_id_for(entry: ScheduleEntry) -> str:
     return f"fp{entry.entry_id}"
 
 
+TITLE_PREFIX = {CALL: "Call", CALLBACK: "Follow-up call", MEETING: "Meeting"}
+
+
 def to_event(entry: ScheduleEntry, reminder_minutes: int) -> CalendarEvent:
-    title = f"Call: {entry.name}" + (f" ({entry.company})" if entry.company else "")
+    prefix = TITLE_PREFIX.get(entry.type, entry.type.capitalize())
+    title = f"{prefix}: {entry.name}" + (f" ({entry.company})" if entry.company else "")
     details = [f"Phone: {entry.phone}"]
     if entry.email:
         details.append(f"Email: {entry.email}")
     if entry.company:
         details.append(f"Company: {entry.company}")
-    details += ["", f"Contact ID: {entry.contact_id}",
-                "After the call, record the outcome with this Contact ID."]
+    if entry.note:
+        details += ["", f"Note: {entry.note}"]
+    details += ["", f"Contact ID: {entry.contact_id}"]
+    if entry.type in (CALL, CALLBACK):
+        details.append("After the call, record the outcome with this Contact ID.")
     description = "\n".join(details)
+    # A physical meeting needs travel time, so it gets an earlier reminder.
+    reminder = 60 if entry.type == MEETING else reminder_minutes
     return CalendarEvent(
         event_id=event_id_for(entry),
         summary=title,
         description=description,
         start=entry.start,
         end=entry.start + timedelta(minutes=entry.duration_minutes),
-        reminder_minutes=reminder_minutes,
+        reminder_minutes=reminder,
+        location=entry.location,
     )
 
 

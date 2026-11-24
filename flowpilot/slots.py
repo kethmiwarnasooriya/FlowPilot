@@ -1,11 +1,12 @@
 """Pure time-slot calculation: given a time, find the next valid call slot.
 
 No files, no queue, no clock - just datetimes in and out, so every rule
-(rounding, working hours, weekends) is easy to test.
+(rounding, working hours, weekends, clashes) is easy to test.
 """
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 
 from flowpilot.config import Config
@@ -41,10 +42,17 @@ def fit_to_working_hours(t: datetime, cfg: Config) -> datetime:
     raise RuntimeError("No working slot found in the next 14 days - check config")
 
 
-def next_slot(now: datetime, last_slot: datetime | None, cfg: Config) -> datetime:
-    """The next call slot: not in the past, at least one interval after the last booked slot."""
+def next_free_slot(earliest: datetime, taken: Iterable[datetime], cfg: Config) -> datetime:
+    """First slot at or after `earliest` that is in working hours and at least one
+    interval away from every already-taken slot."""
     interval = timedelta(minutes=cfg.call_interval_minutes)
-    candidate = round_up(now.astimezone(cfg.timezone), cfg.call_interval_minutes)
-    if last_slot is not None:
-        candidate = max(candidate, last_slot.astimezone(cfg.timezone) + interval)
-    return fit_to_working_hours(candidate, cfg)
+    taken = [t.astimezone(cfg.timezone) for t in taken]
+    candidate = fit_to_working_hours(
+        round_up(earliest.astimezone(cfg.timezone), cfg.call_interval_minutes), cfg
+    )
+    for _ in range(10_000):  # safety limit
+        clashes = [t for t in taken if abs(candidate - t) < interval]
+        if not clashes:
+            return candidate
+        candidate = fit_to_working_hours(max(clashes) + interval, cfg)
+    raise RuntimeError("Could not find a free slot")

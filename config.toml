@@ -11,6 +11,8 @@ working_hours_end = "17:00"
 working_days = [0, 1, 2, 3, 4]
 # Default length of a call event in the calendar, in minutes.
 call_duration_minutes = 15
+# Default length of a physical meeting, in minutes.
+meeting_duration_minutes = 60
 timezone = "Asia/Colombo"
 
 [extraction]
