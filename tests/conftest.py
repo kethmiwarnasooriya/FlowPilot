@@ -2,6 +2,7 @@
 
 import dataclasses
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
@@ -10,14 +11,15 @@ from flowpilot.config import load_config
 
 @pytest.fixture
 def cfg(tmp_path):
-    """Real config.toml values, but all files go to a temporary folder."""
+    """Real config.toml values, but EVERY file path points into a temporary folder,
+    so tests can never touch real data - including paths added to Config later."""
     real = load_config()
-    return dataclasses.replace(
-        real,
-        queue_db=tmp_path / "queue.db",
-        schedule_file=tmp_path / "schedule.txt",
-        contacts_store=tmp_path / "contacts.json",
-    )
+    redirected = {
+        f.name: tmp_path / getattr(real, f.name).name
+        for f in dataclasses.fields(real)
+        if isinstance(getattr(real, f.name), Path)
+    }
+    return dataclasses.replace(real, **redirected)
 
 
 @pytest.fixture

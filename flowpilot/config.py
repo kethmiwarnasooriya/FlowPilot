@@ -23,10 +23,13 @@ class Config:
     default_country_code: str
     queue_db: Path
     schedule_file: Path
+    sync_state_file: Path
     contacts_store: Path
     calendar_id: str
     credentials_file: Path
     token_file: Path
+    sync_poll_seconds: int
+    reminder_minutes: int
 
 
 def _parse_hhmm(value: str, field: str) -> time:
@@ -56,10 +59,13 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> Config:
         # no matter which folder they are started from.
         queue_db=PROJECT_ROOT / paths["queue_db"],
         schedule_file=PROJECT_ROOT / paths["schedule_file"],
+        sync_state_file=PROJECT_ROOT / paths["sync_state_file"],
         contacts_store=PROJECT_ROOT / paths["contacts_store"],
         calendar_id=google["calendar_id"],
         credentials_file=PROJECT_ROOT / google["credentials_file"],
         token_file=PROJECT_ROOT / google["token_file"],
+        sync_poll_seconds=int(google["sync_poll_seconds"]),
+        reminder_minutes=int(google["reminder_minutes"]),
     )
     _validate(cfg)
     return cfg

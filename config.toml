@@ -22,6 +22,8 @@ default_country_code = "+94"
 queue_db = "data/queue.db"
 # File the scheduler writes and the calendar-sync process reads.
 schedule_file = "data/schedule.txt"
+# Which schedule entries are already in Google Calendar (entry id -> event id).
+sync_state_file = "data/sync_state.json"
 # Where contact status is stored.
 contacts_store = "data/contacts.json"
 
@@ -29,3 +31,7 @@ contacts_store = "data/contacts.json"
 calendar_id = "primary"
 credentials_file = "credentials.json"
 token_file = "token.json"
+# How often the sync process checks the schedule file for new entries (watch mode).
+sync_poll_seconds = 30
+# Pop-up reminder before each call, in minutes.
+reminder_minutes = 5
