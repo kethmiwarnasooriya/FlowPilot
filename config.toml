@@ -13,6 +13,10 @@ working_days = [0, 1, 2, 3, 4]
 call_duration_minutes = 15
 timezone = "Asia/Colombo"
 
+[extraction]
+# Local numbers like 0771234567 are converted to +94771234567.
+default_country_code = "+94"
+
 [paths]
 # File the scheduler writes and the calendar-sync process reads.
 schedule_file = "data/schedule.txt"

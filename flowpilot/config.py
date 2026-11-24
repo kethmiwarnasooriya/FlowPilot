@@ -20,6 +20,7 @@ class Config:
     working_hours_end: time
     working_days: tuple[int, ...]
     timezone: ZoneInfo
+    default_country_code: str
     schedule_file: Path
     contacts_store: Path
     calendar_id: str
@@ -49,6 +50,7 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> Config:
         working_hours_end=_parse_hhmm(sched["working_hours_end"], "working_hours_end"),
         working_days=tuple(sched["working_days"]),
         timezone=ZoneInfo(sched["timezone"]),
+        default_country_code=raw["extraction"]["default_country_code"],
         # Relative paths are resolved from the project root, so scripts work
         # no matter which folder they are started from.
         schedule_file=PROJECT_ROOT / paths["schedule_file"],
@@ -70,3 +72,6 @@ def _validate(cfg: Config) -> None:
         raise ValueError("working_hours_start must be before working_hours_end")
     if not cfg.working_days or any(d not in range(7) for d in cfg.working_days):
         raise ValueError("working_days must be a non-empty list of numbers 0-6")
+    code = cfg.default_country_code
+    if not (code.startswith("+") and code[1:].isdigit()):
+        raise ValueError(f"default_country_code must look like +94, got {code!r}")
