@@ -18,6 +18,8 @@ timezone = "Asia/Colombo"
 default_country_code = "+94"
 
 [paths]
+# Persistent queue between document ingestion and the scheduler.
+queue_db = "data/queue.db"
 # File the scheduler writes and the calendar-sync process reads.
 schedule_file = "data/schedule.txt"
 # Where contact status is stored.

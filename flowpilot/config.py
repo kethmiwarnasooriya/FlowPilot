@@ -21,6 +21,7 @@ class Config:
     working_days: tuple[int, ...]
     timezone: ZoneInfo
     default_country_code: str
+    queue_db: Path
     schedule_file: Path
     contacts_store: Path
     calendar_id: str
@@ -53,6 +54,7 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> Config:
         default_country_code=raw["extraction"]["default_country_code"],
         # Relative paths are resolved from the project root, so scripts work
         # no matter which folder they are started from.
+        queue_db=PROJECT_ROOT / paths["queue_db"],
         schedule_file=PROJECT_ROOT / paths["schedule_file"],
         contacts_store=PROJECT_ROOT / paths["contacts_store"],
         calendar_id=google["calendar_id"],
