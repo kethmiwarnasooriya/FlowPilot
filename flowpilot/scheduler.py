@@ -15,7 +15,12 @@ from flowpilot.contact_store import ContactNotFound, ContactStore
 from flowpilot.message_queue import MessageQueue
 from flowpilot.models import Contact, ContactStatus, InvalidTransition
 from flowpilot.schedule_file import (
-    CALL, CALLBACK, ScheduleEntry, append_entry, read_entries, taken_call_slots,
+    CALL,
+    CALLBACK,
+    ScheduleEntry,
+    append_entry,
+    read_entries,
+    taken_call_slots,
 )
 from flowpilot.slots import next_free_slot
 

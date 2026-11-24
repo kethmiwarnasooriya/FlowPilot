@@ -74,7 +74,7 @@ def _parse_tables(text: str) -> list[dict[str, str]]:
             continue
         if columns is None or len(cells) != len(columns):
             continue
-        records.append({f: v for f, v in zip(columns, cells) if f and v})
+        records.append({f: v for f, v in zip(columns, cells, strict=True) if f and v})
     return records
 
 

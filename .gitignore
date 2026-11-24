@@ -16,3 +16,10 @@ data/
 .DS_Store
 .vscode/
 .idea/
+
+# Tooling output
+.coverage
+.ruff_cache/
+
+# Personal notes (not part of the project)
+INTERVIEW_PREP.md

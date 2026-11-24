@@ -31,11 +31,11 @@ def make_contacts_docx() -> None:
         "Please schedule introductory calls with the following business contacts."
     )
     table = doc.add_table(rows=1, cols=4)
-    for cell, title in zip(table.rows[0].cells, ("Name", "Company", "Phone", "Email")):
+    for cell, title in zip(table.rows[0].cells, ("Name", "Company", "Phone", "Email"), strict=True):
         cell.text = title
     for row in TABLE_CONTACTS:
         cells = table.add_row().cells
-        for cell, value in zip(cells, row):
+        for cell, value in zip(cells, row, strict=True):
             cell.text = value
     doc.add_paragraph("Prepared by the Sales team.")
     doc.save(OUT / "contacts.docx")

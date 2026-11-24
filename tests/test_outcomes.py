@@ -9,7 +9,11 @@ from flowpilot.ingest import ingest_document
 from flowpilot.message_queue import SQLiteQueue
 from flowpilot.models import ContactStatus, InvalidTransition
 from flowpilot.outcomes import (
-    add_months, parse_delay, record_callback, record_meeting, record_not_interested,
+    add_months,
+    parse_delay,
+    record_callback,
+    record_meeting,
+    record_not_interested,
 )
 from flowpilot.schedule_file import CALLBACK, MEETING, read_entries
 from flowpilot.scheduler import run_scheduler
