@@ -1,0 +1,3 @@
+# Only needed to (re)generate the sample documents in samples/.
+-r requirements.txt
+fpdf2==2.8.1
