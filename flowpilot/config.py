@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import tomllib
 from dataclasses import dataclass
 from datetime import time
@@ -40,7 +41,9 @@ def _parse_hhmm(value: str, field: str) -> time:
         raise ValueError(f"{field} must be HH:MM, got {value!r}") from None
 
 
-def load_config(path: Path = DEFAULT_CONFIG_PATH) -> Config:
+def load_config(path: Path | None = None) -> Config:
+    """Load config.toml, or the file named by the FLOWPILOT_CONFIG environment variable."""
+    path = path or Path(os.environ.get("FLOWPILOT_CONFIG", DEFAULT_CONFIG_PATH))
     with open(path, "rb") as f:
         raw = tomllib.load(f)
 

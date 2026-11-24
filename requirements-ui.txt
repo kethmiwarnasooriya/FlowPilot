@@ -1,0 +1,4 @@
+# Web dashboard (optional). Run with: streamlit run dashboard.py
+-r requirements.txt
+streamlit==1.50.0
+protobuf>=6.33.5,<7

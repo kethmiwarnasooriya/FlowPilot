@@ -131,7 +131,6 @@ names may contain commas, and a line damaged by a crash affects only that line.
   (a version number per contact) would detect this.
 - **Contacts are matched by phone number only.** Two people sharing an office number are
   treated as the same contact.
-- A small web dashboard could be added on top of the same modules the CLI uses.
 
 ## Setup
 
@@ -205,7 +204,7 @@ Recreate them with `python scripts/make_samples.py` (needs `requirements-dev.txt
 
 ```bash
 pip install -r requirements-dev.txt
-python -m pytest                        # 122 tests
+python -m pytest                        # 126 tests (4 need requirements-ui.txt)
 python -m pytest --cov=flowpilot        # coverage (about 90%)
 ruff check .                            # linting
 ```
@@ -224,3 +223,22 @@ scripts/        sample document generator
 config.toml     settings
 data/           runtime data: queue, contact store, schedule.txt (git-ignored)
 ```
+
+## Web dashboard (optional)
+
+A minimal web UI built with Streamlit. Like the CLI, it is a thin layer over the same modules,
+so all rules and validation are shared.
+
+```bash
+pip install -r requirements-ui.txt
+streamlit run dashboard.py          # opens http://localhost:8501
+```
+
+- Upload Word/PDF files and see which contacts were queued or skipped
+- Run the scheduler and the Google Calendar sync with one click each
+- Contact table with status counts and a status filter
+- Pick a contact to see its history and record the call outcome
+  (call back later, not interested, do not call again, book a meeting)
+- View the schedule file and which entries are already in the calendar
+
+Sign in to Google once with `python -m flowpilot sync` before using the sync button.
