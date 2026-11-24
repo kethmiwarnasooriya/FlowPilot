@@ -52,12 +52,12 @@ class ContactStore:
             (contact.phone, contact.status.value, json.dumps(contact.to_dict()), contact.id),
         )
         if cur.rowcount == 0:
-            raise ContactNotFound(contact.id)
+            raise ContactNotFound(f"No contact with id {contact.id!r}")
 
     def get(self, contact_id: str) -> Contact:
         row = self._db.execute("SELECT data FROM contacts WHERE id = ?", (contact_id,)).fetchone()
         if row is None:
-            raise ContactNotFound(contact_id)
+            raise ContactNotFound(f"No contact with id {contact_id!r}. Use the 'list' command to see ids.")
         return Contact.from_dict(json.loads(row[0]))
 
     def find_by_phone(self, phone: str) -> Contact | None:

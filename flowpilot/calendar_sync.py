@@ -1,13 +1,12 @@
 """Calendar sync process: reads the schedule file and creates a calendar event per entry.
 
 Runs separately from the scheduler. Usage:
-    python -m flowpilot.calendar_sync           # sync once
-    python -m flowpilot.calendar_sync --watch   # keep running, check every N seconds
+    python -m flowpilot sync           # sync once
+    python -m flowpilot sync --watch   # keep running, check every N seconds
 """
 
 from __future__ import annotations
 
-import argparse
 import json
 import os
 import time
@@ -16,7 +15,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from flowpilot.calendar_client import CalendarClient, CalendarEvent, EventAlreadyExists
-from flowpilot.config import Config, load_config
+from flowpilot.config import Config
 from flowpilot.schedule_file import CALL, CALLBACK, MEETING, ScheduleEntry, read_entries
 
 
@@ -118,29 +117,3 @@ def watch(cfg: Config, client: CalendarClient) -> None:
         if report.error:
             print(f"Sync error, will retry: {report.error}")
         time.sleep(cfg.sync_poll_seconds)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Sync the call schedule to Google Calendar")
-    parser.add_argument("--watch", action="store_true", help="keep running and poll for new entries")
-    args = parser.parse_args()
-
-    from flowpilot.calendar_client import GoogleCalendarClient
-
-    cfg = load_config()
-    client = GoogleCalendarClient(cfg.credentials_file, cfg.token_file, cfg.calendar_id)
-    if args.watch:
-        try:
-            watch(cfg, client)
-        except KeyboardInterrupt:
-            print("Stopped.")
-    else:
-        report = sync_once(cfg, client)
-        print(f"Created {len(report.created)} event(s), "
-              f"{len(report.already_existed)} already existed.")
-        if report.error:
-            print(f"Error: {report.error} - run again to retry the rest.")
-
-
-if __name__ == "__main__":
-    main()
